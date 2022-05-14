@@ -1,0 +1,11 @@
+[package]
+name = "scrollrack"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+printpdf = "0.5.0"
+scryfall = "0.10.2"
+clap = { version="3.1.18", features=["derive"] }
+regex = "1.5.5"
+lazy_static = "1.4.0"
