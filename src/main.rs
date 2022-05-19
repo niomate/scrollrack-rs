@@ -25,10 +25,15 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Hash, Clone)]
 struct CardInfo {
     name: String,
     quantity: u8,
+}
+
+#[derive(PartialEq, Eq, Debug, Hash)]
+struct SetInfo {
+    set_name: String,
 }
 
 impl CardInfo {
@@ -64,17 +69,26 @@ impl TryFrom<&str> for CardInfo {
     }
 }
 
-fn gen_outfile_name(in_name: &str) -> String {
-    format!(
-        "{}-by-set.txt",
-        Path::new(&in_name).file_stem().unwrap().to_str().unwrap()
-    )
+mod output {
+
+    use crate::{File, Path};
+
+    fn gen_outfile_name(in_name: &str) -> String {
+        format!(
+            "{}-by-set.txt",
+            Path::new(&in_name).file_stem().unwrap().to_str().unwrap()
+        )
+    }
+
+    pub(crate) fn gen_outfile_from_infile(infile_path: &str) -> File {
+        File::create(gen_outfile_name(infile_path)).expect("Could not open a new file")
+    }
 }
 
 fn main() {
     let args = Args::parse();
 
-    let mut cards_by_set = HashMap::<String, HashSet<String>>::new();
+    let mut cards_by_set = HashMap::<SetInfo, HashSet<CardInfo>>::new();
 
     if let Ok(lines) = read_lines(&args.path) {
         let card_infos = lines
@@ -86,28 +100,32 @@ fn main() {
         for info in card_infos {
             SearchOptions::new()
                 .unique(UniqueStrategy::Prints)
-                .query(exact(info.name))
+                .query(exact(&info.name))
                 .search_all()
                 .unwrap_or(vec![])
                 .iter()
-                .for_each(|info| {
+                .for_each(|scryinfo| {
                     cards_by_set
-                        .entry(info.set_name.clone())
+                        .entry(SetInfo {
+                            set_name: scryinfo.set_name.clone(),
+                        })
                         .or_insert(HashSet::new())
-                        .insert(info.name.clone());
+                        .insert(info.clone());
                 });
         }
     }
 
     println!("{:?}", cards_by_set);
-    let mut outfile =
-        File::create(gen_outfile_name(&args.path)).expect("Could not open a new file");
+
+    let mut outfile = output::gen_outfile_from_infile(&args.path);
 
     cards_by_set.keys().for_each(|k| {
-        outfile.write_all(format!("{}:\n", k).as_bytes()).unwrap();
+        outfile
+            .write_all(format!("{}:\n", k.set_name).as_bytes())
+            .unwrap();
         for card in &cards_by_set[k] {
             outfile
-                .write_all(format!("\t- {card}\n").as_bytes())
+                .write_all(format!("\t- {}\n", card.name).as_bytes())
                 .unwrap();
         }
         outfile.write_all(b"\n").unwrap();
