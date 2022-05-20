@@ -1,6 +1,10 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 
+// TODO: I think I need 2 different data types for card infos.
+// a) for the cards parsed from the input file and
+// b) for the cards retrieved from the api
+
 #[derive(PartialEq, Eq, Debug, Hash, Clone)]
 pub struct CardInfo {
     name: String,
