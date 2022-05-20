@@ -1,5 +1,4 @@
-# Scrollrack - Support your LGS
-
+# Scrollrack
 Scrollrack is an application to sort the cards you need by set so you can find them easier when buying them in your LGS
 
 ## Build
