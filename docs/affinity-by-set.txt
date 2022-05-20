@@ -1,0 +1,257 @@
+Adventures in the Forgotten Realms:
+	- Treasure Vault
+
+Adventures in the Forgotten Realms Promos:
+	- Treasure Vault
+
+Aether Revolt:
+	- Ornithopter
+	- Metallic Rebuke
+
+Antiquities:
+	- Hurkyl's Recall
+	- Ornithopter
+
+Archenemy:
+	- Aether Spellbomb
+
+Born of the Gods:
+	- Springleaf Drum
+
+Classic Sixth Edition:
+	- Ornithopter
+
+Commander 2014:
+	- Darksteel Citadel
+
+Commander 2016:
+	- Darksteel Citadel
+	- Cranial Plating
+
+Commander 2018:
+	- Darksteel Citadel
+
+Commander 2021:
+	- Darksteel Citadel
+	- Dispatch
+
+Commander Anthology Volume II:
+	- Darksteel Citadel
+
+Darksteel:
+	- Darksteel Citadel
+
+Double Masters:
+	- Glimmervoid
+	- Cranial Plating
+	- Welding Jar
+	- Springleaf Drum
+	- Metallic Rebuke
+	- Darksteel Citadel
+
+Duel Decks: Elspeth vs. Tezzeret:
+	- Frogmite
+	- Aether Spellbomb
+	- Darksteel Citadel
+	- Thoughtcast
+
+Duel Decks: Elves vs. Inventors:
+	- Darksteel Citadel
+
+Duel Decks: Mirrodin Pure vs. New Phyrexia:
+	- Memnite
+	- Dispatch
+
+Fifth Dawn:
+	- Cranial Plating
+
+Fifth Edition:
+	- Hurkyl's Recall
+	- Ornithopter
+
+Foreign Black Border:
+	- Ornithopter
+	- Hurkyl's Recall
+
+Fourth Edition:
+	- Hurkyl's Recall
+	- Ornithopter
+
+Fourth Edition Foreign Black Border:
+	- Ornithopter
+	- Hurkyl's Recall
+
+Heads I Win, Tails You Lose:
+	- Shadowspear
+
+Historic Anthology 1:
+	- Ornithopter
+
+Ikoria: Lair of Behemoths:
+	- Jegantha, the Wellspring
+
+Ikoria: Lair of Behemoths Promos:
+	- Jegantha, the Wellspring
+
+Innistrad: Crimson Vow:
+	- Blood Fountain
+
+Innistrad: Double Feature:
+	- Blood Fountain
+	- Pithing Needle
+
+Innistrad: Midnight Hunt:
+	- Pithing Needle
+
+Innistrad: Midnight Hunt Promos:
+	- Pithing Needle
+
+Jumpstart:
+	- Aether Spellbomb
+	- Gingerbrute
+
+Jumpstart: Historic Horizons:
+	- Nettlecyst
+	- Thought Monitor
+
+Kaladesh Inventions:
+	- Pithing Needle
+	- Ornithopter
+
+Kaladesh Remastered:
+	- Metallic Rebuke
+	- Ornithopter
+
+Lorwyn:
+	- Springleaf Drum
+
+Magic 2010:
+	- Pithing Needle
+	- Ornithopter
+
+Magic 2011:
+	- Ornithopter
+
+Magic 2015:
+	- Ornithopter
+	- Darksteel Citadel
+
+Magic Online Promos:
+	- Memnite
+	- Shadowspear
+	- Jegantha, the Wellspring
+
+Mirrodin:
+	- Thoughtcast
+	- Ornithopter
+	- Aether Spellbomb
+	- Welding Jar
+	- Frogmite
+	- Glimmervoid
+
+Mirrodin Besieged:
+	- Tezzeret, Agent of Bolas
+
+Modern Horizons 2:
+	- Urza's Saga
+	- Nettlecyst
+	- Thought Monitor
+	- Mistvault Bridge
+	- Sojourner's Companion
+
+Modern Horizons 2 Promos:
+	- Thought Monitor
+	- Nettlecyst
+	- Urza's Saga
+
+Modern Masters:
+	- Glimmervoid
+	- Frogmite
+	- Aether Spellbomb
+
+Modern Masters 2015:
+	- Darksteel Citadel
+	- Dispatch
+	- Etched Champion
+	- Hurkyl's Recall
+	- Frogmite
+	- Cranial Plating
+	- Thoughtcast
+
+Mystery Booster:
+	- Aether Spellbomb
+	- Thoughtcast
+	- Metallic Rebuke
+	- Darksteel Citadel
+	- Ornithopter
+	- Frogmite
+
+Mystery Booster Retail Edition Foils:
+	- Memnite
+
+Mythic Edition:
+	- Tezzeret, Agent of Bolas
+
+Neon Dynasty Commander:
+	- Dispatch
+	- Thoughtcast
+
+New Phyrexia:
+	- Dispatch
+
+Ninth Edition:
+	- Ornithopter
+
+Planechase:
+	- Cranial Plating
+
+Return to Ravnica:
+	- Pithing Needle
+
+Revised Edition:
+	- Ornithopter
+	- Hurkyl's Recall
+
+Salvat 2011:
+	- Ornithopter
+
+Saviors of Kamigawa:
+	- Pithing Needle
+
+Scars of Mirrodin:
+	- Memnite
+	- Etched Champion
+
+Scars of Mirrodin Promos:
+	- Memnite
+
+Secret Lair Drop:
+	- Darksteel Citadel
+	- Ornithopter
+	- Pithing Needle
+
+Summer Magic / Edgar:
+	- Ornithopter
+	- Hurkyl's Recall
+
+Tenth Edition:
+	- Hurkyl's Recall
+	- Ornithopter
+	- Pithing Needle
+
+The List:
+	- Cranial Plating
+	- Memnite
+
+Theros Beyond Death:
+	- Soul-Guide Lantern
+	- Shadowspear
+
+Theros Beyond Death Promos:
+	- Shadowspear
+
+Throne of Eldraine:
+	- Gingerbrute
+
+Time Spiral Remastered:
+	- Cranial Plating

@@ -22,7 +22,6 @@
 
 # Sideboard
 3 Dispatch
-Nope
 1 Etched Champion
 2 Hurkyl's Recall
 1 Jegantha, the Wellspring
