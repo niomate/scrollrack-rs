@@ -587,6 +587,7 @@ dependencies = [
 name = "scrollrack-core"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "itertools",
  "lazy_static",
  "printpdf",

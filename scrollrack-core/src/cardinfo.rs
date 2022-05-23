@@ -1,9 +1,6 @@
 use lazy_static::lazy_static;
 use regex::Regex;
-
-// TODO: I think I need 2 different data types for card infos.
-// a) for the cards parsed from the input file and
-// b) for the cards retrieved from the api
+use scryfall::{set::Set, uri::Uri};
 
 #[derive(PartialEq, Eq, Debug, Hash, Clone)]
 pub struct CardInfo {
@@ -12,22 +9,44 @@ pub struct CardInfo {
     collector_number: u8,
 }
 
-#[derive(PartialEq, Eq, Debug, Hash)]
+#[derive(Debug)]
 pub struct SetInfo {
+    // TODO: Not really sensible to do it like this, maybe find another way
     set_name: String,
+    set_uri: Uri<Set>,
+}
+
+impl PartialEq for SetInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.set_name == other.set_name
+    }
+}
+
+impl Eq for SetInfo {}
+
+impl std::hash::Hash for SetInfo {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.set_name.hash(state)
+    }
 }
 
 impl SetInfo {
+    pub fn new(set_name: &str, set_uri: Uri<Set>) -> Self {
+        SetInfo {
+            set_name: set_name.to_string(),
+            set_uri,
+        }
+    }
+
     /// Get a reference to the set info's set name.
     #[must_use]
     pub fn set_name(&self) -> &str {
         self.set_name.as_ref()
     }
 
-    pub fn new(set_name: &str) -> Self {
-        SetInfo {
-            set_name: set_name.to_string(),
-        }
+    #[must_use]
+    pub fn set_uri(&self) -> &Uri<Set> {
+        &self.set_uri
     }
 }
 

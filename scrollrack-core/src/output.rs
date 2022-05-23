@@ -1,5 +1,6 @@
 use crate::cardinfo::SetInfo;
 use crate::query_stuff::CardsBySet;
+use chrono::naive::NaiveDate;
 use itertools::Itertools;
 use std::error;
 use std::fs::File;
@@ -13,8 +14,7 @@ pub fn gen_outfile_name(in_name: &str) -> String {
     )
 }
 
-pub trait SetInfoSortKey
-{
+pub trait SetInfoSortKey {
     type ReturnType: Ord;
     fn get_key(set_info: &SetInfo) -> Self::ReturnType;
 }
@@ -27,35 +27,37 @@ impl SetInfoSortKey for SortByName {
     }
 }
 
-pub struct _SortByDate;
-impl SetInfoSortKey for _SortByDate {
-    type ReturnType =  u32;
-    fn get_key(_set_info: &SetInfo) -> u32 {
-        unimplemented!()
+pub struct SortByDate;
+impl SetInfoSortKey for SortByDate {
+    type ReturnType = NaiveDate;
+    fn get_key(set_info: &SetInfo) -> NaiveDate {
+        set_info
+            .set_uri()
+            .fetch()
+            .unwrap()
+            .released_at
+            .unwrap_or(NaiveDate::from_yo(1993, 1))
     }
 }
 
-pub fn write_to_file<P>(
-    cards_by_set: CardsBySet,
-    path: &str,
-) -> Result<(), Box<dyn error::Error>>
+pub fn write_to_file<P>(cards_by_set: CardsBySet, path: &str) -> Result<(), String>
 where
     P: SetInfoSortKey,
 {
-    let mut outfile = File::create(path)?;
-    cards_by_set
+    let mut outfile = File::create(path).map_err(|err| format!("Could not open file: {}", &err))?;
+    let out_string: String = cards_by_set
         .keys()
         .sorted_by_key(|set_info| P::get_key(set_info))
-        .for_each(|k| {
-            outfile
-                .write_all(format!("{}:\n", k.set_name()).as_bytes())
-                .unwrap();
-            for card in &cards_by_set[k] {
-                outfile
-                    .write_all(format!("\t- {}\n", card.name).as_bytes())
-                    .unwrap();
-            }
-            outfile.write_all(b"\n").unwrap();
-        });
-    Ok(())
+        .map(|k| {
+            format!("{}:\n", k.set_name())
+                + &cards_by_set[k]
+                    .iter()
+                    .map(|card| format!("\t- {}", card.name))
+                    .join("\n")
+        })
+        .collect();
+
+    outfile
+        .write_all(out_string.as_bytes())
+        .map_err(|err| format!("Could not write to file: {}", err))
 }
