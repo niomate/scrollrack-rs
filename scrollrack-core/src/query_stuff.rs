@@ -15,7 +15,7 @@ pub fn query(info: CardInfo) -> Vec<(SetInfo, card::Card)> {
             res.iter()
                 .map(|scryinfo| {
                     (
-                        SetInfo::new(&scryinfo.set_name, scryinfo.set_uri.clone()),
+                        SetInfo::new(&scryinfo.set_name, scryinfo.set_uri.to_owned()),
                         scryinfo.to_owned(),
                     )
                 })
