@@ -5,15 +5,22 @@ use std::collections::HashMap;
 
 pub type CardsBySet = HashMap<SetInfo, Vec<card::Card>>;
 
+/// For a given card name, query the scryfall API to fetch all printings.
 pub fn query(info: CardInfo) -> Vec<(SetInfo, card::Card)> {
     SearchOptions::new()
         .unique(UniqueStrategy::Prints)
         .query(exact(info.name()))
         .search_all()
-        .unwrap_or(vec![])
-        .iter()
-        .map(|scryinfo| (SetInfo::new(&scryinfo.set_name), scryinfo.to_owned()))
-        .collect()
+        .map_or(vec![], |res| {
+            res.iter()
+                .map(|scryinfo| {
+                    (
+                        SetInfo::new(&scryinfo.set_name, scryinfo.set_uri.clone()),
+                        scryinfo.to_owned(),
+                    )
+                })
+                .collect()
+        })
 }
 
 pub fn merge_results(results: Vec<(SetInfo, card::Card)>) -> CardsBySet {
