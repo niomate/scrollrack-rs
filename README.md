@@ -1,5 +1,6 @@
 # Scrollrack
-Scrollrack is an application to sort the cards you need by set so you can find them easier when buying them in your LGS
+Scrollrack is an application to sort the cards you need by set so you can find 
+them easier when searching through binders in your LGS.
 
 ## Build
 
@@ -9,15 +10,16 @@ cd scrollrack
 cargo build --release
 ```
 
+You can also just download the latest release as a binary.
+
 
 ## Example Usage
 
 
-After building or downloading the binary, you can use the program like so
-
 ```bash
-./path/to/scrollrack --path path/to/your/list.txt
+scrollrack-cli path/to/decklist.txt
 ```
+
 
 The list should be in a simple textformat. You can comment lines by prefixing
 them with "#" and also specify quantities (even though it is not really used
@@ -64,263 +66,269 @@ Example output:
 
 ```txt
 Adventures in the Forgotten Realms:
-	- Treasure Vault
+	- Treasure Vault (#261)
 
 Adventures in the Forgotten Realms Promos:
-	- Treasure Vault
+	- Treasure Vault (#261a)
 
 Aether Revolt:
-	- Ornithopter
-	- Metallic Rebuke
+	- Metallic Rebuke (#39)
+	- Ornithopter (#167)
 
 Antiquities:
-	- Hurkyl's Recall
-	- Ornithopter
+	- Hurkyl's Recall (#10)
+	- Ornithopter (#60)
 
 Archenemy:
-	- Aether Spellbomb
+	- Aether Spellbomb (#102)
 
 Born of the Gods:
-	- Springleaf Drum
+	- Springleaf Drum (#162)
 
 Classic Sixth Edition:
-	- Ornithopter
+	- Ornithopter (#304)
 
 Commander 2014:
-	- Darksteel Citadel
+	- Darksteel Citadel (#290)
 
 Commander 2016:
-	- Darksteel Citadel
-	- Cranial Plating
+	- Cranial Plating (#249)
+	- Darksteel Citadel (#288)
 
 Commander 2018:
-	- Darksteel Citadel
+	- Darksteel Citadel (#241)
 
 Commander 2021:
-	- Darksteel Citadel
-	- Dispatch
+	- Darksteel Citadel (#285)
+	- Dispatch (#88)
 
 Commander Anthology Volume II:
-	- Darksteel Citadel
+	- Darksteel Citadel (#243)
 
 Darksteel:
-	- Darksteel Citadel
+	- Darksteel Citadel (#164)
 
 Double Masters:
-	- Glimmervoid
-	- Cranial Plating
-	- Welding Jar
-	- Springleaf Drum
-	- Metallic Rebuke
-	- Darksteel Citadel
+	- Cranial Plating (#245)
+	- Darksteel Citadel (#315)
+	- Glimmervoid (#319)
+	- Metallic Rebuke (#59)
+	- Springleaf Drum (#291)
+	- Welding Jar (#307)
 
 Duel Decks: Elspeth vs. Tezzeret:
-	- Frogmite
-	- Aether Spellbomb
-	- Darksteel Citadel
-	- Thoughtcast
+	- Aether Spellbomb (#61)
+	- Darksteel Citadel (#72)
+	- Frogmite (#51)
+	- Thoughtcast (#71)
 
 Duel Decks: Elves vs. Inventors:
-	- Darksteel Citadel
+	- Darksteel Citadel (#65)
 
 Duel Decks: Mirrodin Pure vs. New Phyrexia:
-	- Memnite
-	- Dispatch
+	- Dispatch (#23)
+	- Memnite (#2)
 
 Fifth Dawn:
-	- Cranial Plating
+	- Cranial Plating (#113)
 
 Fifth Edition:
-	- Hurkyl's Recall
-	- Ornithopter
+	- Hurkyl's Recall (#93)
+	- Ornithopter (#393)
 
 Foreign Black Border:
-	- Ornithopter
-	- Hurkyl's Recall
+	- Hurkyl's Recall (#60)
+	- Ornithopter (#270)
 
 Fourth Edition:
-	- Hurkyl's Recall
-	- Ornithopter
+	- Hurkyl's Recall (#77)
+	- Ornithopter (#341)
 
 Fourth Edition Foreign Black Border:
-	- Ornithopter
-	- Hurkyl's Recall
+	- Hurkyl's Recall (#77)
+	- Ornithopter (#341)
 
 Heads I Win, Tails You Lose:
-	- Shadowspear
+	- Shadowspear (#66)
 
 Historic Anthology 1:
-	- Ornithopter
+	- Ornithopter (#18)
 
 Ikoria: Lair of Behemoths:
-	- Jegantha, the Wellspring
+	- Jegantha, the Wellspring (#222)
 
 Ikoria: Lair of Behemoths Promos:
-	- Jegantha, the Wellspring
+	- Jegantha, the Wellspring (#222p)
 
 Innistrad: Crimson Vow:
-	- Blood Fountain
+	- Blood Fountain (#95)
 
 Innistrad: Double Feature:
-	- Blood Fountain
-	- Pithing Needle
+	- Blood Fountain (#362)
+	- Pithing Needle (#257)
 
 Innistrad: Midnight Hunt:
-	- Pithing Needle
+	- Pithing Needle (#257)
 
 Innistrad: Midnight Hunt Promos:
-	- Pithing Needle
+	- Pithing Needle (#257p)
 
 Jumpstart:
-	- Aether Spellbomb
-	- Gingerbrute
+	- Aether Spellbomb (#456)
+	- Gingerbrute (#466)
 
 Jumpstart: Historic Horizons:
-	- Nettlecyst
-	- Thought Monitor
+	- Nettlecyst (#752)
+	- Thought Monitor (#261)
 
 Kaladesh Inventions:
-	- Pithing Needle
-	- Ornithopter
+	- Ornithopter (#42)
+	- Pithing Needle (#44)
 
 Kaladesh Remastered:
-	- Metallic Rebuke
-	- Ornithopter
+	- Metallic Rebuke (#56)
+	- Ornithopter (#255)
 
 Lorwyn:
-	- Springleaf Drum
+	- Springleaf Drum (#261)
 
 Magic 2010:
-	- Pithing Needle
-	- Ornithopter
+	- Ornithopter (#216)
+	- Pithing Needle (#217)
 
 Magic 2011:
-	- Ornithopter
+	- Ornithopter (#211)
 
 Magic 2015:
-	- Ornithopter
-	- Darksteel Citadel
+	- Darksteel Citadel (#242)
+	- Ornithopter (#223)
 
 Magic Online Promos:
-	- Memnite
-	- Shadowspear
-	- Jegantha, the Wellspring
+	- Jegantha, the Wellspring (#80811)
+	- Memnite (#37871)
+	- Shadowspear (#79969)
 
 Mirrodin:
-	- Thoughtcast
-	- Ornithopter
-	- Aether Spellbomb
-	- Welding Jar
-	- Frogmite
-	- Glimmervoid
+	- Aether Spellbomb (#141)
+	- Frogmite (#172)
+	- Glimmervoid (#281)
+	- Ornithopter (#224)
+	- Thoughtcast (#54)
+	- Welding Jar (#274)
 
 Mirrodin Besieged:
-	- Tezzeret, Agent of Bolas
+	- Tezzeret, Agent of Bolas (#97)
 
 Modern Horizons 2:
-	- Urza's Saga
-	- Nettlecyst
-	- Thought Monitor
-	- Mistvault Bridge
-	- Sojourner's Companion
+	- Mistvault Bridge (#249)
+	- Nettlecyst (#231)
+	- Sojourner's Companion (#235)
+	- Thought Monitor (#71)
+	- Urza's Saga (#259)
 
 Modern Horizons 2 Promos:
-	- Thought Monitor
-	- Nettlecyst
-	- Urza's Saga
+	- Nettlecyst (#231s)
+	- Thought Monitor (#71s)
+	- Urza's Saga (#259s)
 
 Modern Masters:
-	- Glimmervoid
-	- Frogmite
-	- Aether Spellbomb
+	- Aether Spellbomb (#196)
+	- Frogmite (#207)
+	- Glimmervoid (#223)
 
 Modern Masters 2015:
-	- Darksteel Citadel
-	- Dispatch
-	- Etched Champion
-	- Hurkyl's Recall
-	- Frogmite
-	- Cranial Plating
-	- Thoughtcast
+	- Cranial Plating (#206)
+	- Darksteel Citadel (#238)
+	- Dispatch (#15)
+	- Etched Champion (#209)
+	- Frogmite (#215)
+	- Hurkyl's Recall (#48)
+	- Thoughtcast (#64)
 
 Mystery Booster:
-	- Aether Spellbomb
-	- Thoughtcast
-	- Metallic Rebuke
-	- Darksteel Citadel
-	- Ornithopter
-	- Frogmite
+	- Aether Spellbomb (#1540)
+	- Darksteel Citadel (#1662)
+	- Frogmite (#1587)
+	- Metallic Rebuke (#428)
+	- Ornithopter (#1615)
+	- Thoughtcast (#520)
 
 Mystery Booster Retail Edition Foils:
-	- Memnite
+	- Memnite (#108)
 
 Mythic Edition:
-	- Tezzeret, Agent of Bolas
+	- Tezzeret, Agent of Bolas (#GR7)
 
 Neon Dynasty Commander:
-	- Dispatch
-	- Thoughtcast
+	- Dispatch (#83)
+	- Thoughtcast (#99)
 
 New Phyrexia:
-	- Dispatch
+	- Dispatch (#7)
 
 Ninth Edition:
-	- Ornithopter
+	- Ornithopter (#305)
 
 Planechase:
-	- Cranial Plating
+	- Cranial Plating (#110)
 
 Return to Ravnica:
-	- Pithing Needle
+	- Pithing Needle (#231)
 
 Revised Edition:
-	- Ornithopter
-	- Hurkyl's Recall
+	- Hurkyl's Recall (#60)
+	- Ornithopter (#270)
 
 Salvat 2011:
-	- Ornithopter
+	- Ornithopter (#197)
 
 Saviors of Kamigawa:
-	- Pithing Needle
+	- Pithing Needle (#158)
 
 Scars of Mirrodin:
-	- Memnite
-	- Etched Champion
+	- Etched Champion (#154)
+	- Memnite (#174)
 
 Scars of Mirrodin Promos:
-	- Memnite
+	- Memnite (#174)
 
 Secret Lair Drop:
-	- Darksteel Citadel
-	- Ornithopter
-	- Pithing Needle
+	- Darksteel Citadel (#608)
+	- Ornithopter (#604)
+	- Pithing Needle (#44)
 
 Summer Magic / Edgar:
-	- Ornithopter
-	- Hurkyl's Recall
+	- Hurkyl's Recall (#60)
+	- Ornithopter (#270)
 
 Tenth Edition:
-	- Hurkyl's Recall
-	- Ornithopter
-	- Pithing Needle
+	- Hurkyl's Recall (#88)
+	- Ornithopter (#336)
+	- Pithing Needle (#338)
 
 The List:
-	- Cranial Plating
-	- Memnite
+	- Cranial Plating (#342)
+	- Memnite (#262)
 
 Theros Beyond Death:
-	- Soul-Guide Lantern
-	- Shadowspear
+	- Shadowspear (#236)
+	- Soul-Guide Lantern (#237)
 
 Theros Beyond Death Promos:
-	- Shadowspear
+	- Shadowspear (#236p)
 
 Throne of Eldraine:
-	- Gingerbrute
+	- Gingerbrute (#219)
 
 Time Spiral Remastered:
-	- Cranial Plating
+	- Cranial Plating (#392)
+
 ```
+### Command Line arguments
+
+- `-O/--ordering`: Valid values are `alpha`/`date`, order in which the sets are sorted in the output file
+- `-o/--output`: Path to the output file
+- `--inverted`: Inverted mapping (card -> set) (Not yet implemented)
 
 ## Future features
 
