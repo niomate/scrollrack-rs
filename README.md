@@ -1,3 +1,5 @@
+[Github Actions](https://github.com/<OWNER>/<REPOSITORY>/actions/workflows/rust.yml/badge.svg)
+
 # Scrollrack
 Scrollrack is an application to sort the cards you need by set so you can find 
 them easier when searching through binders in your LGS.
