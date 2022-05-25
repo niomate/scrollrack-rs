@@ -55,7 +55,12 @@ where
                 &cards_by_set[k]
                     .iter()
                     .sorted_by_key(|card| &card.name)
-                    .map(|card| format!("\t- {} (#{})", card.name, card.collector_number))
+                    .map(|card| format!(
+                        "\t- {} (#{}): {} €",
+                        card.name,
+                        card.collector_number,
+                        card.prices.eur.as_ref().unwrap_or(&"0.00".to_string())
+                    ))
                     .join("\n")
             )
         })
