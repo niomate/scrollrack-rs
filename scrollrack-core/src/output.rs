@@ -30,13 +30,14 @@ pub struct SortByDate;
 impl SetInfoOrder for SortByDate {
     type ReturnType = NaiveDate;
     fn get_key(set_info: &SetInfo) -> NaiveDate {
-        set_info
-            .set_uri()
-            .fetch()
-            .unwrap()
-            .released_at
-            // Year in which MTG was first released
-            .unwrap_or(NaiveDate::from_yo(1993, 1))
+        // set_info
+        //     .set_uri()
+        //     .fetch()
+        //     .unwrap()
+        //     .released_at
+        //     // Year in which MTG was first released
+        //     .unwrap_or(NaiveDate::from_yo(1993, 1))
+        NaiveDate::from_yo(1993, 1)
     }
 }
 
@@ -52,14 +53,14 @@ where
             format!(
                 "{}:\n{}",
                 k.set_name(),
-                &cards_by_set[k]
+                cards_by_set[k]
                     .iter()
                     .sorted_by_key(|card| &card.name)
                     .map(|card| format!(
-                        "\t- {} (#{}): {} €",
+                        "\t- {} (#{}): {} EUR",
                         card.name,
                         card.collector_number,
-                        card.prices.eur.as_ref().unwrap_or(&"0.00".to_string())
+                        card.prices.eur.clone().unwrap_or("--".into())
                     ))
                     .join("\n")
             )
