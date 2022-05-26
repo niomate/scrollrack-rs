@@ -11,9 +11,7 @@ pub struct CardInfo {
 
 #[derive(Debug)]
 pub struct SetInfo {
-    // TODO: Not really sensible to do it like this, maybe find another way
     set_name: String,
-    set_uri: Uri<Set>,
 }
 
 impl PartialEq for SetInfo {
@@ -34,7 +32,6 @@ impl SetInfo {
     pub fn new(set_name: &str, set_uri: Uri<Set>) -> Self {
         SetInfo {
             set_name: set_name.to_string(),
-            set_uri,
         }
     }
 
@@ -42,11 +39,6 @@ impl SetInfo {
     #[must_use]
     pub fn set_name(&self) -> &str {
         self.set_name.as_ref()
-    }
-
-    #[must_use]
-    pub fn set_uri(&self) -> &Uri<Set> {
-        &self.set_uri
     }
 }
 
