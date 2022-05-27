@@ -6,10 +6,15 @@ use std::collections::HashMap;
 pub type CardsBySet = HashMap<SetInfo, Vec<card::Card>>;
 
 /// For a given card name, query the scryfall API to fetch all printings.
-pub fn query(info: CardInfo) -> Vec<(SetInfo, card::Card)> {
+pub fn query(info: CardInfo, no_promos: bool) -> Vec<(SetInfo, card::Card)> {
+    let card_query = if no_promos {
+        Query::And(vec![exact(info.name()), not(PrintingIs::Promo)])
+    } else {
+        Query::And(vec![exact(info.name())])
+    };
     SearchOptions::new()
         .unique(UniqueStrategy::Prints)
-        .query(exact(info.name()))
+        .query(card_query)
         .search_all()
         .map_or(vec![], |res| {
             res.iter()
@@ -34,6 +39,12 @@ pub fn merge_results(results: Vec<(SetInfo, card::Card)>) -> CardsBySet {
     merged
 }
 
-pub fn query_and_merge_all(cards: Vec<CardInfo>) -> CardsBySet {
-    merge_results(cards.into_iter().map(query).flatten().collect())
+pub fn query_and_merge_all(cards: Vec<CardInfo>, no_promos: bool) -> CardsBySet {
+    merge_results(
+        cards
+            .into_iter()
+            .map(|c| query(c, no_promos))
+            .flatten()
+            .collect(),
+    )
 }
