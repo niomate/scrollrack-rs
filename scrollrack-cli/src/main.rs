@@ -22,13 +22,15 @@ struct Args {
     inverted: bool,
     #[clap(short, long, help = "Path to the output file")]
     output: Option<String>,
+    #[clap(long, help = "Exclude promo sets from the output")]
+    no_promos: bool,
 }
 
 fn main() -> Result<(), String> {
     let args = Args::parse();
 
     let cards_by_set = parse_card_infos(&args.path)
-        .map(query_and_merge_all)
+        .map(|c| query_and_merge_all(c, args.no_promos))
         .map_err(|err| format!("Error: {}", err))?;
 
     let outfile = match args.output {
