@@ -29,7 +29,7 @@ impl std::hash::Hash for SetInfo {
 }
 
 impl SetInfo {
-    pub fn new(set_name: &str, set_uri: Uri<Set>) -> Self {
+    pub fn new(set_name: &str, _set_uri: Uri<Set>) -> Self {
         SetInfo {
             set_name: set_name.to_string(),
         }

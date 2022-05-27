@@ -29,7 +29,7 @@ impl SetInfoOrder for SortByName {
 pub struct SortByDate;
 impl SetInfoOrder for SortByDate {
     type ReturnType = NaiveDate;
-    fn get_key(set_info: &SetInfo) -> NaiveDate {
+    fn get_key(_set_info: &SetInfo) -> NaiveDate {
         // set_info
         //     .set_uri()
         //     .fetch()

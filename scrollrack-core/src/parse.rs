@@ -4,7 +4,9 @@ use std::fs::File;
 use std::io::BufRead;
 use std::{io, path::Path};
 
-pub fn parse_card_infos<P>(filename: P) -> Result<Vec<CardInfo>, Box<dyn error::Error>>
+pub fn parse_card_infos<P>(
+    filename: P,
+) -> Result<impl Iterator<Item = CardInfo>, Box<dyn error::Error>>
 where
     P: AsRef<Path>,
 {
@@ -16,7 +18,6 @@ where
                 .filter(|l| !l.starts_with("#"))
                 .filter_map(|l| CardInfo::try_from(&l[..]).ok())
                 .filter(|c| !c.is_basic())
-                .collect()
         })
         .map_err(|e| e.into())
 }
