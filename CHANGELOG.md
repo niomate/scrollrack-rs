@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - Added card prices to output
+- Added no-promos flag
 
 ## [0.2.0-alpha] - 2022-05-23
 
