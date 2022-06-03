@@ -7,11 +7,14 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 
 - Added changelog
+- Updated changelog
+- Updated changelog
 
 ### Features
 
 - Added card prices to output
 - Added no-promos flag
+- Added unit tests for most functions and made api more testable
 
 ## [0.2.0-alpha] - 2022-05-23
 
