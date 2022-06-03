@@ -2,7 +2,7 @@ use clap::ArgEnum;
 use clap::Parser;
 
 use scrollrack_core::output;
-use scrollrack_core::parse::parse_card_infos;
+use scrollrack_core::parse;
 use scrollrack_core::query_stuff::CardQuery;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum, Debug)]
@@ -29,17 +29,19 @@ struct Args {
 fn main() -> Result<(), String> {
     let args = Args::parse();
 
-    let cards_by_set = parse_card_infos(&args.path)
-        .map(|c| CardQuery::with_options(args.include_promos, args.inverted).query(c))
-        .map_err(|err| format!("Error: {}", err))?;
+    let lines = parse::read_lines(&args.path).map_err(|e| format!("Error: {}", e))?;
+    let cards_by_set = CardQuery::with_options(args.include_promos, args.inverted)
+        .query(parse::parse_card_infos(lines));
 
     let outfile = match args.output {
         Some(path) => path,
         None => output::gen_outfile_name(&args.path),
     };
 
-    match args.ordering {
-        Ordering::ALPHA => output::write_to_file::<output::SortByName>(cards_by_set, &outfile),
-        Ordering::DATE => output::write_to_file::<output::SortByDate>(cards_by_set, &outfile),
-    }
+    let out_string = match args.ordering {
+        Ordering::ALPHA => output::output_string::<output::SortByName>(cards_by_set),
+        Ordering::DATE => output::output_string::<output::SortByDate>(cards_by_set),
+    };
+
+    output::write_to_file(&out_string, &outfile)
 }
