@@ -1,12 +1,10 @@
 use lazy_static::lazy_static;
 use regex::Regex;
-use scryfall::{set::Set, uri::Uri};
 
 #[derive(PartialEq, Eq, Debug, Hash, Clone)]
 pub struct CardInfo {
     name: String,
     quantity: u8,
-    collector_number: u8,
 }
 
 #[derive(Debug)]
@@ -29,7 +27,10 @@ impl std::hash::Hash for SetInfo {
 }
 
 impl SetInfo {
-    pub fn new(set_name: &str, _set_uri: Uri<Set>) -> Self {
+    pub fn new<P>(set_name: P) -> Self
+    where
+        P: ToString,
+    {
         SetInfo {
             set_name: set_name.to_string(),
         }
@@ -43,11 +44,13 @@ impl SetInfo {
 }
 
 impl CardInfo {
-    pub fn new(name: String, quantity: u8) -> Self {
+    pub fn new<P>(name: P, quantity: u8) -> Self
+    where
+        P: ToString,
+    {
         CardInfo {
-            name,
+            name: name.to_string(),
             quantity,
-            collector_number: u8::MAX,
         }
     }
     pub fn is_basic(&self) -> bool {
@@ -98,7 +101,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_card_from_string_mult() {
+    fn test_card_try_from_string_mult() {
         let c = CardInfo::try_from("2 Ornithopter");
         assert!(c.is_ok());
         assert_eq!(c.as_ref().unwrap().quantity, 2);
@@ -106,7 +109,7 @@ mod tests {
     }
 
     #[test]
-    fn test_card_from_string_single() {
+    fn test_card_try_from_string_single() {
         let c = CardInfo::try_from("Ornithopter");
         assert!(c.is_ok());
         assert_eq!(c.as_ref().unwrap().quantity, 1);
@@ -114,8 +117,31 @@ mod tests {
     }
 
     #[test]
-    fn test_card_from_string_empty() {
+    fn test_card_try_from_string_empty() {
         let c = CardInfo::try_from("");
         assert!(c.is_err());
+    }
+
+    #[test]
+    fn test_card_info_constructor() {
+        let c = CardInfo::new("Ornithopter", 10);
+        assert_eq!(c.name(), "Ornithopter");
+        assert_eq!(c.quantity(), 10);
+        assert!(!c.is_basic());
+    }
+
+    #[test]
+    fn test_card_info_is_basic() {
+        let basics = vec!["Island", "Mountain", "Forest", "Swamp", "Plains", "Wastes"];
+        for basic in &basics {
+            let c = CardInfo::new(basic, 1);
+            assert!(c.is_basic());
+        }
+    }
+
+    #[test]
+    fn test_set_info_constructor() {
+        let c = SetInfo::new("Kaladesh");
+        assert_eq!(c.set_name(), "Kaladesh");
     }
 }
