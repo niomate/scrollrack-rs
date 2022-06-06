@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use regex::Regex;
+use anyhow::Result;
 
 #[derive(PartialEq, Eq, Debug, Hash, Clone)]
 pub struct CardInfo {

@@ -5,6 +5,8 @@ use scrollrack_core::output;
 use scrollrack_core::parse;
 use scrollrack_core::query_stuff::CardQuery;
 
+use anyhow::Result;
+
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum, Debug)]
 enum Ordering {
     ALPHA,
@@ -26,10 +28,10 @@ struct Args {
     include_promos: bool,
 }
 
-fn main() -> Result<(), String> {
+fn main() -> Result<()> {
     let args = Args::parse();
 
-    let lines = parse::read_lines(&args.path).map_err(|e| format!("Error: {}", e))?;
+    let lines = parse::read_lines(&args.path)?;
     let cards_by_set = CardQuery::with_options(args.include_promos, args.inverted)
         .query(parse::parse_card_infos(lines));
 
