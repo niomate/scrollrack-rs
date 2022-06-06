@@ -1,5 +1,6 @@
 use crate::cardinfo::SetInfo;
-use crate::query_stuff::{CardsBySet, ScryfallCardWrapper};
+use crate::query_stuff::CardsBySet;
+use anyhow::Result;
 use chrono::naive::NaiveDate;
 use itertools::Itertools;
 use std::fs::File;
@@ -67,18 +68,16 @@ where
         .join("\n\n")
 }
 
-pub fn write_to_file(data: &str, path: &str) -> Result<(), String> {
-    let mut outfile = File::create(path).map_err(|err| format!("Could not open file: {}", &err))?;
-    outfile
-        .write_all(data.as_bytes())
-        .map_err(|err| format!("Could not write to file: {}", err))
+pub fn write_to_file(data: &str, path: &str) -> Result<()> {
+    let mut outfile = File::create(path)?;
+    Ok(outfile.write_all(data.as_bytes())?)
 }
 
 #[cfg(test)]
 mod tests {
+    use super::{gen_outfile_name, output_string, CardsBySet, SortByName};
     use crate::cardinfo::SetInfo;
-
-    use super::{gen_outfile_name, output_string, CardsBySet, ScryfallCardWrapper, SortByName};
+    use crate::query_stuff::ScryfallCardWrapper;
 
     #[test]
     fn test_output_string() {

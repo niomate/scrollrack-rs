@@ -1,10 +1,10 @@
 use crate::cardinfo::CardInfo;
-use std::error;
 use std::fs::File;
 use std::io::BufRead;
 use std::{io, path::Path};
+use anyhow::Result;
 
-pub fn read_lines<P>(filename: P) -> Result<impl Iterator<Item = String>, Box<dyn error::Error>>
+pub fn read_lines<P>(filename: P) -> Result<impl Iterator<Item = String>>
 where
     P: AsRef<Path>,
 {
