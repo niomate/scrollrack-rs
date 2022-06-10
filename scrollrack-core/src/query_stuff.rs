@@ -1,5 +1,6 @@
 use crate::cardinfo::{CardInfo, SetInfo};
 use scryfall::card;
+use scryfall::set;
 use scryfall::search::prelude::*;
 use std::collections::HashMap;
 
@@ -90,7 +91,9 @@ impl CardQuery {
             .search_all()
             .map_or(vec![], |res| {
                 res.iter()
-                    .filter(|scryinfo| scryinfo.games.contains(&scryfall::card::Game::Paper))
+                    .filter(|scryinfo| {
+                        scryinfo.games.contains(&scryfall::card::Game::Paper) && scryinfo.set_type != set::SetType::GiftBox
+                    })
                     .map(|scryinfo| (SetInfo::new(&scryinfo.set_name), scryinfo.to_owned()))
                     .collect()
             })
@@ -100,6 +103,7 @@ impl CardQuery {
         let mut query_vec = vec![exact(info.name())];
         if !self.include_promos {
             query_vec.push(not(PrintingIs::Promo));
+            query_vec.push(not(PrintingIs::Masterpiece));
         }
 
         Query::And(query_vec)
