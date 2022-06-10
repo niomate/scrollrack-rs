@@ -1,6 +1,7 @@
 [workspace]
 members = [
 	"scrollrack-core",
-	"scrollrack-cli"
+	"scrollrack-cli",
+	"scrollrack-gui"
 ]
 
