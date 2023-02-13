@@ -1,5 +1,5 @@
-use crate::cardinfo::SetInfo;
-use crate::query_stuff::CardsBySet;
+use crate::card_query::CardsBySet;
+use crate::setinfo::SetInfo;
 use anyhow::Result;
 use chrono::naive::NaiveDate;
 use itertools::Itertools;
@@ -56,12 +56,11 @@ where
                 cards_by_set[k]
                     .iter()
                     .sorted_by_key(|card| card.card_name())
-                    .map(|card| format!(
-                        "\t- {} (#{}): {} EUR",
-                        card.card_name(),
-                        card.collector_number(),
-                        card.price()
-                    ))
+                    .map(|card| if k.virtual_set() {
+                        "\t -".to_owned() + card.card_name()
+                    } else {
+                        "\t -".to_owned() + &card.format_detailed()
+                    })
                     .join("\n")
             )
         })
@@ -76,8 +75,8 @@ pub fn write_to_file(data: &str, path: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{gen_outfile_name, output_string, CardsBySet, SortByName};
-    use crate::cardinfo::SetInfo;
-    use crate::query_stuff::ScryfallCardWrapper;
+    use crate::scryfall_card_wrapper::ScryfallCardWrapper;
+    use crate::setinfo::SetInfo;
 
     #[test]
     fn test_output_string() {
