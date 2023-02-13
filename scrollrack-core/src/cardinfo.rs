@@ -1,47 +1,11 @@
+use anyhow::Result;
 use lazy_static::lazy_static;
 use regex::Regex;
-use anyhow::Result;
 
 #[derive(PartialEq, Eq, Debug, Hash, Clone)]
 pub struct CardInfo {
     name: String,
     quantity: u8,
-}
-
-#[derive(Debug)]
-pub struct SetInfo {
-    set_name: String,
-}
-
-impl PartialEq for SetInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.set_name == other.set_name
-    }
-}
-
-impl Eq for SetInfo {}
-
-impl std::hash::Hash for SetInfo {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.set_name.hash(state)
-    }
-}
-
-impl SetInfo {
-    pub fn new<P>(set_name: P) -> Self
-    where
-        P: ToString,
-    {
-        SetInfo {
-            set_name: set_name.to_string(),
-        }
-    }
-
-    /// Get a reference to the set info's set name.
-    #[must_use]
-    pub fn set_name(&self) -> &str {
-        self.set_name.as_ref()
-    }
 }
 
 impl CardInfo {
@@ -54,6 +18,7 @@ impl CardInfo {
             quantity,
         }
     }
+
     pub fn is_basic(&self) -> bool {
         self.name == "Island"
             || self.name == "Plains"
@@ -138,11 +103,5 @@ mod tests {
             let c = CardInfo::new(basic, 1);
             assert!(c.is_basic());
         }
-    }
-
-    #[test]
-    fn test_set_info_constructor() {
-        let c = SetInfo::new("Kaladesh");
-        assert_eq!(c.set_name(), "Kaladesh");
     }
 }

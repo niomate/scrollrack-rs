@@ -9,9 +9,10 @@ use druid::{
     AppDelegate, AppLauncher, DelegateCtx, Env, FileDialogOptions, FileSpec, Handled, Target,
     Widget, WidgetExt, WindowDesc,
 };
+use scrollrack_core::card_query;
 use scrollrack_core::output;
 use scrollrack_core::parse;
-use scrollrack_core::query_stuff;
+use scrollrack_core::rules::prefilter;
 
 struct Delegate;
 
@@ -50,7 +51,14 @@ fn build_app() -> impl Widget<AppData> {
 
     let sort = Button::new("Sort").on_click(move |_ctx, data: &mut AppData, _| {
         let card_infos = parse::parse_card_infos(data.input_str.lines());
-        let cards_by_set = query_stuff::CardQuery::with_options(false, false).query(card_infos);
+        let cards_by_set = card_query::CardQuery::build()
+            .with_prefilter(prefilter::PrefilterRule::NoPromo)
+            .with_prefilter(prefilter::PrefilterRule::NoGiftBox)
+            .with_prefilter(prefilter::PrefilterRule::IsPaper)
+            .cards(card_infos)
+            .done()
+            .run();
+
         let out_string = output::output_string::<output::SortByName>(cards_by_set);
         data.output_str = out_string.into();
     });

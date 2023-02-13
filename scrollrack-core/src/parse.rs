@@ -1,8 +1,8 @@
 use crate::cardinfo::CardInfo;
+use anyhow::Result;
 use std::fs::File;
 use std::io::BufRead;
 use std::{io, path::Path};
-use anyhow::Result;
 
 pub fn read_lines<P>(filename: P) -> Result<impl Iterator<Item = String>>
 where
@@ -13,7 +13,7 @@ where
         .map_err(|e| e.into())
 }
 
-pub fn parse_card_infos<P>(lines: impl Iterator<Item = P>) -> impl Iterator<Item = CardInfo>
+pub fn parse_card_infos<P>(lines: impl Iterator<Item = P>) -> Vec<CardInfo>
 where
     P: ToString,
 {
@@ -22,6 +22,7 @@ where
         .filter(|l| !l.starts_with("#"))
         .filter_map(|l| CardInfo::try_from(&l[..]).ok())
         .filter(|c| !c.is_basic())
+        .collect()
 }
 
 #[cfg(test)]
@@ -36,7 +37,7 @@ mod tests {
             "Emry, Lurker of the Loch".to_string(),
         ];
 
-        let parsed = parse_card_infos(lines.iter()).collect::<Vec<_>>();
+        let parsed = parse_card_infos(lines.iter());
         assert_eq!(
             parsed,
             vec![

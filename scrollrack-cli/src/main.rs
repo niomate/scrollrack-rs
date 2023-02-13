@@ -3,7 +3,9 @@ use clap::Parser;
 
 use scrollrack_core::output;
 use scrollrack_core::parse;
-use scrollrack_core::query_stuff::CardQuery;
+use scrollrack_core::card_query::CardQuery;
+use scrollrack_core::rules::prefilter::PrefilterRule;
+use scrollrack_core::rules::postprocess::PostProcessRule;
 
 use anyhow::Result;
 
@@ -32,8 +34,19 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     let lines = parse::read_lines(&args.path)?;
-    let cards_by_set = CardQuery::with_options(args.include_promos, args.inverted)
-        .query(parse::parse_card_infos(lines));
+
+    let cards_by_set = CardQuery::build()
+        .include_promos(args.include_promos)
+        .invert_mapping(args.inverted)
+        .with_prefilter(PrefilterRule::NoPromo)
+        .with_prefilter(PrefilterRule::NoGiftBox)
+        .with_prefilter(PrefilterRule::IsPaper)
+        .with_prefilter(PrefilterRule::NoMasterpiece)
+        .with_prefilter(PrefilterRule::NoMysteryBoosterRetailEditionFoil)
+        .with_postprocess(PostProcessRule::CombineCommanderSets)
+        .cards(parse::parse_card_infos(lines))
+        .done()
+        .run();
 
     let outfile = match args.output {
         Some(path) => path,
