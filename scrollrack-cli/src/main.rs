@@ -4,8 +4,7 @@ use clap::Parser;
 use scrollrack_core::output;
 use scrollrack_core::parse;
 use scrollrack_core::card_query::CardQuery;
-use scrollrack_core::rules::prefilter::PrefilterRule;
-use scrollrack_core::rules::postprocess::PostProcessRule;
+use scrollrack_core::rules::postprocess::Combine;
 
 use anyhow::Result;
 
@@ -26,8 +25,6 @@ struct Args {
     inverted: bool,
     #[clap(short, long, help = "Path to the output file")]
     output: Option<String>,
-    #[clap(long, help = "Include promo sets in the output")]
-    include_promos: bool,
 }
 
 fn main() -> Result<()> {
@@ -36,17 +33,12 @@ fn main() -> Result<()> {
     let lines = parse::read_lines(&args.path)?;
 
     let cards_by_set = CardQuery::build()
-        .include_promos(args.include_promos)
-        .invert_mapping(args.inverted)
-        .with_prefilter(PrefilterRule::NoPromo)
-        .with_prefilter(PrefilterRule::NoGiftBox)
-        .with_prefilter(PrefilterRule::IsPaper)
-        .with_prefilter(PrefilterRule::NoMasterpiece)
-        .with_prefilter(PrefilterRule::NoMysteryBoosterRetailEditionFoil)
-        .with_postprocess(PostProcessRule::CombineCommanderSets)
+        .postprocess(Combine::Commander)
+        .postprocess(Combine::MysteryAndTheList)
+        .postprocess(Combine::DuelDecks)
         .cards(parse::parse_card_infos(lines))
         .done()
-        .run();
+        .run_par();
 
     let outfile = match args.output {
         Some(path) => path,

@@ -1,18 +1,21 @@
 use crate::cardinfo::CardInfo;
 use crate::rules::postprocess;
-use crate::rules::prefilter;
 use crate::scryfall_card_wrapper::ScryfallCardWrapper;
 use crate::setinfo::SetInfo;
+use rayon::prelude::*;
 use scryfall::card;
 use scryfall::search::prelude::*;
+use scryfall::set;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::sync::{Arc, RwLock};
 
 pub type CardsBySet = HashMap<SetInfo, Vec<ScryfallCardWrapper>>;
 type PremappingEntry = (SetInfo, card::Card);
 type Premapping = Vec<PremappingEntry>;
 
 fn generate_premapping_entry(card: &card::Card) -> PremappingEntry {
+    // println!("{}, {}, {}", card.set_name, card.set_type, card.set);
     (
         SetInfo::with_set_type(&card.set_name, card.set_type),
         card.to_owned(),
@@ -20,27 +23,21 @@ fn generate_premapping_entry(card: &card::Card) -> PremappingEntry {
 }
 
 pub struct CardQuery {
-    include_promos: bool,
     _inverted_mapping: bool,
-    prefilter_rules: HashSet<prefilter::PrefilterRule>,
-    post_process_rules: HashSet<postprocess::PostProcessRule>,
+    post_process_rules: HashSet<postprocess::Combine>,
     cards: Vec<CardInfo>,
 }
 
 pub struct CardQueryBuilder {
-    include_promos: bool,
     _inverted_mapping: bool,
-    prefilter_rules: HashSet<prefilter::PrefilterRule>,
-    post_process_rules: HashSet<postprocess::PostProcessRule>,
+    post_process_rules: HashSet<postprocess::Combine>,
     cards: Vec<CardInfo>,
 }
 
 impl CardQueryBuilder {
     fn new() -> Self {
         CardQueryBuilder {
-            include_promos: false,
             _inverted_mapping: false,
-            prefilter_rules: HashSet::new(),
             post_process_rules: HashSet::new(),
             cards: vec![],
         }
@@ -51,18 +48,8 @@ impl CardQueryBuilder {
         self
     }
 
-    pub fn with_prefilter(&mut self, rule: prefilter::PrefilterRule) -> &mut Self {
-        self.prefilter_rules.insert(rule);
-        self
-    }
-
-    pub fn with_postprocess(&mut self, rule: postprocess::PostProcessRule) -> &mut Self {
+    pub fn postprocess(&mut self, rule: postprocess::Combine) -> &mut Self {
         self.post_process_rules.insert(rule);
-        self
-    }
-
-    pub fn include_promos(&mut self, value: bool) -> &mut Self {
-        self.include_promos = value;
         self
     }
 
@@ -73,9 +60,7 @@ impl CardQueryBuilder {
 
     pub fn done(&self) -> CardQuery {
         CardQuery {
-            include_promos: self.include_promos,
             _inverted_mapping: self._inverted_mapping,
-            prefilter_rules: self.prefilter_rules.to_owned(),
             post_process_rules: self.post_process_rules.to_owned(),
             cards: self.cards.clone(),
         }
@@ -88,22 +73,48 @@ impl CardQuery {
     }
 
     pub fn run(&self) -> CardsBySet {
-        let res = self.merge_results(self.cards.iter().map(|c| self.single_query(&c)).flatten());
-        let mut processed = self.postprocess(res);
+        let mut merged = CardsBySet::new();
+
+        self.cards
+            .iter()
+            .map(|c| self.single_query(&c))
+            .flatten()
+            .for_each(|res| {
+                merged.entry(res.0).or_insert(Vec::new()).push(res.1.into());
+            });
+
+        let mut processed = self.postprocess(merged);
         self.dedup(&mut processed)
     }
 
-    fn merge_results(&self, results: impl Iterator<Item = PremappingEntry>) -> CardsBySet {
-        let mut merged = CardsBySet::new();
-        results.into_iter().for_each(|res| {
-            merged.entry(res.0).or_insert(Vec::new()).push(res.1.into());
-        });
+    pub fn run_par(&self) -> CardsBySet {
+        let merged = CardsBySet::new();
+        let merged_ref = Arc::new(RwLock::new(merged));
 
-        self.dedup(&mut merged)
+        self.cards
+            .par_iter()
+            .map(|c| self.single_query(&c))
+            .flatten()
+            .for_each(|res| {
+                Arc::clone(&merged_ref)
+                    .write()
+                    .expect("Could not get write lock")
+                    .entry(res.0)
+                    .or_insert(Vec::new())
+                    .push(res.1.into());
+            });
+
+        let mut processed = self.postprocess(
+            merged_ref
+                .read()
+                .expect("Could not get read lock")
+                .to_owned(),
+        );
+        self.dedup(&mut processed)
     }
 
     fn dedup(&self, cards_by_set: &mut CardsBySet) -> CardsBySet {
-        cards_by_set.values_mut().for_each(|cards| {
+        cards_by_set.par_iter_mut().for_each(move |(_set, cards)| {
             cards.sort_by_key(|card| card.card_name().to_owned());
             cards.dedup_by_key(|card| card.card_name().to_owned())
         });
@@ -111,28 +122,32 @@ impl CardQuery {
         cards_by_set.to_owned()
     }
 
-    fn prefilter(&self, card: &card::Card) -> bool {
-        self.prefilter_rules
-            .iter()
-            .fold(true, |acc, rule| acc && rule.check(card))
-    }
-
     fn postprocess(&self, cards_by_set: CardsBySet) -> CardsBySet {
         self.post_process_rules
             .iter()
-            .fold(cards_by_set, |acc, rule| rule.apply(acc))
+            .fold(cards_by_set, |acc, rule| rule.apply(&acc))
     }
 
     fn single_query(&self, card_info: &CardInfo) -> Premapping {
         SearchOptions::new()
             .unique(UniqueStrategy::Prints)
-            .query(exact(card_info.name()))
+            .query(
+                exact(card_info.name()).and(
+                    game(card::Game::Paper)
+                        .and(not(set_type(set::SetType::Masterpiece)
+                            .or(set_type(set::SetType::TreasureChest))
+                            .or(set_type(set::SetType::GiftBox))
+                            .or(set_type(set::SetType::Vanguard))
+                            .or(set_type(set::SetType::Memorabilia))
+                            .or(set_type(set::SetType::Token))
+                            .or(set_type(set::SetType::Promo))
+                            .or(set("fmb1"))))
+                        .and(language("english").or(language("german"))),
+                ),
+            )
             .search_all()
             .map_or(vec![], |res| {
-                res.iter()
-                    .filter(|card| self.prefilter(card))
-                    .map(generate_premapping_entry)
-                    .collect()
+                res.par_iter().map(generate_premapping_entry).collect()
             })
     }
 }

@@ -38,7 +38,7 @@ impl SetInfoOrder for SortByDate {
         //     .released_at
         //     // Year in which MTG was first released
         //     .unwrap_or(NaiveDate::from_yo(1993, 1))
-        NaiveDate::from_yo(1993, 1)
+        NaiveDate::from_yo_opt(1993, 1).expect("invalid or out-of-range date")
     }
 }
 
@@ -57,9 +57,9 @@ where
                     .iter()
                     .sorted_by_key(|card| card.card_name())
                     .map(|card| if k.virtual_set() {
-                        "\t -".to_owned() + card.card_name()
+                        "\t - ".to_owned() + card.card_name()
                     } else {
-                        "\t -".to_owned() + &card.format_detailed()
+                        "\t - ".to_owned() + &card.format_detailed()
                     })
                     .join("\n")
             )

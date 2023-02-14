@@ -1,8 +1,11 @@
 [package]
+edition = "2021"
 name = "scrollrack-gui"
 version = "0.1.0"
-edition = "2021"
-
 [dependencies]
-scrollrack-core = { path = "../scrollrack-core" }
-druid = "0.7.0"
+dioxus = "*"
+dioxus-desktop = "0.3.0"
+itertools = "0.10.3"
+
+[dependencies.scrollrack-core]
+path = "../scrollrack-core"
