@@ -1,7 +1,6 @@
 use itertools::Itertools;
 use scrollrack_core::card_query::CardQuery;
 use scrollrack_core::parse;
-use scrollrack_core::rules::postprocess::Combine;
 
 use dioxus::prelude::*;
 
@@ -12,13 +11,7 @@ fn main() {
 fn app(cx: Scope) -> Element {
     let lines = parse::read_lines("docs/affinity.txt").unwrap();
 
-    let cards_by_set = CardQuery::build()
-        .postprocess(Combine::Commander)
-        .postprocess(Combine::DuelDecks)
-        .postprocess(Combine::MysteryAndTheList)
-        .cards(parse::parse_card_infos(lines))
-        .done()
-        .run();
+    let cards_by_set = CardQuery::default().run(parse::parse_card_infos(lines));
 
     let cards_sorted = cards_by_set
         .keys()

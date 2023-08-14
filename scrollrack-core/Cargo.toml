@@ -5,10 +5,11 @@ edition = "2021"
 
 [dependencies]
 printpdf = "0.5.0"
-scryfall = "0.10.2"
+scryfall = "0.14.0"
 regex = "1.5.5"
 lazy_static = "1.4.0"
 itertools = "0.10.3"
 chrono = "0.4.19"
 anyhow = "1.0"
 rayon = "1.6"
+futures = "0.3.28"

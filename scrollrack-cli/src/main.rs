@@ -1,10 +1,9 @@
 use clap::ArgEnum;
 use clap::Parser;
 
+use scrollrack_core::card_query::CardQuery;
 use scrollrack_core::output;
 use scrollrack_core::parse;
-use scrollrack_core::card_query::CardQuery;
-use scrollrack_core::rules::postprocess::Combine;
 
 use anyhow::Result;
 
@@ -27,18 +26,15 @@ struct Args {
     output: Option<String>,
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     let args = Args::parse();
 
     let lines = parse::read_lines(&args.path)?;
 
-    let cards_by_set = CardQuery::build()
-        .postprocess(Combine::Commander)
-        .postprocess(Combine::MysteryAndTheList)
-        .postprocess(Combine::DuelDecks)
-        .cards(parse::parse_card_infos(lines))
-        .done()
-        .run_par();
+    let cards_by_set = CardQuery::default()
+        .run(parse::parse_card_infos(lines))
+        .await;
 
     let outfile = match args.output {
         Some(path) => path,
