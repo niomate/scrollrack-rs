@@ -1,21 +1,21 @@
 use crate::cardinfo::CardInfo;
 use crate::rules::postprocess;
+use crate::rules::postprocess::Combine;
 use crate::scryfall_card_wrapper::ScryfallCardWrapper;
 use crate::setinfo::SetInfo;
+use futures::future;
 use rayon::prelude::*;
 use scryfall::card;
 use scryfall::search::prelude::*;
 use scryfall::set;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::sync::{Arc, RwLock};
 
 pub type CardsBySet = HashMap<SetInfo, Vec<ScryfallCardWrapper>>;
 type PremappingEntry = (SetInfo, card::Card);
 type Premapping = Vec<PremappingEntry>;
 
 fn generate_premapping_entry(card: &card::Card) -> PremappingEntry {
-    // println!("{}, {}, {}", card.set_name, card.set_type, card.set);
     (
         SetInfo::with_set_type(&card.set_name, card.set_type),
         card.to_owned(),
@@ -25,13 +25,11 @@ fn generate_premapping_entry(card: &card::Card) -> PremappingEntry {
 pub struct CardQuery {
     _inverted_mapping: bool,
     post_process_rules: HashSet<postprocess::Combine>,
-    cards: Vec<CardInfo>,
 }
 
 pub struct CardQueryBuilder {
     _inverted_mapping: bool,
     post_process_rules: HashSet<postprocess::Combine>,
-    cards: Vec<CardInfo>,
 }
 
 impl CardQueryBuilder {
@@ -39,7 +37,6 @@ impl CardQueryBuilder {
         CardQueryBuilder {
             _inverted_mapping: false,
             post_process_rules: HashSet::new(),
-            cards: vec![],
         }
     }
 
@@ -53,17 +50,21 @@ impl CardQueryBuilder {
         self
     }
 
-    pub fn cards(&mut self, cards: Vec<CardInfo>) -> &mut Self {
-        self.cards.extend(cards);
-        self
-    }
-
     pub fn done(&self) -> CardQuery {
         CardQuery {
             _inverted_mapping: self._inverted_mapping,
             post_process_rules: self.post_process_rules.to_owned(),
-            cards: self.cards.clone(),
         }
+    }
+}
+
+impl Default for CardQuery {
+    fn default() -> Self {
+        CardQueryBuilder::new()
+            .postprocess(Combine::Commander)
+            .postprocess(Combine::MysteryAndTheList)
+            .postprocess(Combine::DuelDecks)
+            .done()
     }
 }
 
@@ -72,12 +73,12 @@ impl CardQuery {
         CardQueryBuilder::new()
     }
 
-    pub fn run(&self) -> CardsBySet {
+    pub async fn run(&self, cards: Vec<CardInfo>) -> CardsBySet {
         let mut merged = CardsBySet::new();
 
-        self.cards
-            .iter()
-            .map(|c| self.single_query(&c))
+        future::join_all(cards.iter().map(|c| self.single_query(&c)))
+            .await
+            .into_iter()
             .flatten()
             .for_each(|res| {
                 merged.entry(res.0).or_insert(Vec::new()).push(res.1.into());
@@ -87,31 +88,31 @@ impl CardQuery {
         self.dedup(&mut processed)
     }
 
-    pub fn run_par(&self) -> CardsBySet {
-        let merged = CardsBySet::new();
-        let merged_ref = Arc::new(RwLock::new(merged));
+    // pub fn run_par(&self, cards: Vec<CardInfo>) -> CardsBySet {
+    //     let merged = CardsBySet::new();
+    //     let merged_ref = Arc::new(RwLock::new(merged));
 
-        self.cards
-            .par_iter()
-            .map(|c| self.single_query(&c))
-            .flatten()
-            .for_each(|res| {
-                Arc::clone(&merged_ref)
-                    .write()
-                    .expect("Could not get write lock")
-                    .entry(res.0)
-                    .or_insert(Vec::new())
-                    .push(res.1.into());
-            });
+    //     cards
+    //         .par_iter()
+    //         .map(|c| self.single_query(&c))
+    //         .flatten()
+    //         .for_each(|res| {
+    //             Arc::clone(&merged_ref)
+    //                 .write()
+    //                 .expect("Could not get write lock")
+    //                 .entry(res.0)
+    //                 .or_insert(Vec::new())
+    //                 .push(res.1.into());
+    //         });
 
-        let mut processed = self.postprocess(
-            merged_ref
-                .read()
-                .expect("Could not get read lock")
-                .to_owned(),
-        );
-        self.dedup(&mut processed)
-    }
+    //     let mut processed = self.postprocess(
+    //         merged_ref
+    //             .read()
+    //             .expect("Could not get read lock")
+    //             .to_owned(),
+    //     );
+    //     self.dedup(&mut processed)
+    // }
 
     fn dedup(&self, cards_by_set: &mut CardsBySet) -> CardsBySet {
         cards_by_set.par_iter_mut().for_each(move |(_set, cards)| {
@@ -128,8 +129,8 @@ impl CardQuery {
             .fold(cards_by_set, |acc, rule| rule.apply(&acc))
     }
 
-    fn single_query(&self, card_info: &CardInfo) -> Premapping {
-        SearchOptions::new()
+    async fn single_query(&self, card_info: &CardInfo) -> Premapping {
+        match SearchOptions::new()
             .unique(UniqueStrategy::Prints)
             .query(
                 exact(card_info.name()).and(
@@ -146,8 +147,13 @@ impl CardQuery {
                 ),
             )
             .search_all()
-            .map_or(vec![], |res| {
-                res.par_iter().map(generate_premapping_entry).collect()
-            })
+            .await
+        {
+            Ok(cards) => cards.par_iter().map(generate_premapping_entry).collect(),
+            Err(e) => {
+                println!("Couldn't find {}: {:?}", card_info.name(), e);
+                vec![]
+            }
+        }
     }
 }
