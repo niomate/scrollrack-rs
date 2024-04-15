@@ -13,6 +13,12 @@ enum Ordering {
     DATE,
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum, Debug)]
+enum Output {
+    TABLE,
+    LIST,
+}
+
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -20,6 +26,8 @@ struct Args {
     path: String,
     #[clap(short='O', long, arg_enum, default_value_t=Ordering::ALPHA, help="Specifies in which order the sets should be printed in the output file")]
     ordering: Ordering,
+    #[clap(short, long, arg_enum, default_value_t=Output::LIST, help="Specifies how the cards should be displayed")]
+    format: Output,
     #[clap(short, long, help = "Output sets per card instead of cards per set")]
     inverted: bool,
     #[clap(short, long, help = "Path to the output file")]
@@ -29,6 +37,8 @@ struct Args {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
+
+    println!("{:?}", args);
 
     let lines = parse::read_lines(&args.path)?;
 
@@ -41,9 +51,19 @@ async fn main() -> Result<()> {
         None => output::gen_outfile_name(&args.path),
     };
 
-    let out_string = match args.ordering {
-        Ordering::ALPHA => output::output_string::<output::SortByName>(cards_by_set),
-        Ordering::DATE => output::output_string::<output::SortByDate>(cards_by_set),
+    let out_string = match (args.format, args.ordering) {
+        (Output::LIST, Ordering::ALPHA) => {
+            output::render::<output::OutputItemList, output::SortByName>(cards_by_set)
+        }
+        (Output::LIST, Ordering::DATE) => {
+            output::render::<output::OutputItemList, output::SortByDate>(cards_by_set)
+        }
+        (Output::TABLE, Ordering::ALPHA) => {
+            output::render::<output::OutputTable, output::SortByName>(cards_by_set)
+        }
+        (Output::TABLE, Ordering::DATE) => {
+            output::render::<output::OutputTable, output::SortByDate>(cards_by_set)
+        }
     };
 
     output::write_to_file(&out_string, &outfile)
