@@ -2,7 +2,10 @@ use clap::ArgEnum;
 use clap::Parser;
 
 use scrollrack_core::card_query::CardQuery;
-use scrollrack_core::output;
+use scrollrack_core::output::{
+    gen_outfile_name, render, write_to_file, OutputFormat, OutputItemList, OutputTable,
+    SortByCardAmount, SortByDate, SortByName,
+};
 use scrollrack_core::parse;
 
 use anyhow::Result;
@@ -11,6 +14,7 @@ use anyhow::Result;
 enum Ordering {
     ALPHA,
     DATE,
+    AMOUNT,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum, Debug)]
@@ -38,8 +42,6 @@ struct Args {
 async fn main() -> Result<()> {
     let args = Args::parse();
 
-    println!("{:?}", args);
-
     let lines = parse::read_lines(&args.path)?;
 
     let cards_by_set = CardQuery::default()
@@ -48,23 +50,19 @@ async fn main() -> Result<()> {
 
     let outfile = match args.output {
         Some(path) => path,
-        None => output::gen_outfile_name(&args.path),
+        None => gen_outfile_name(&args.path),
     };
 
     let out_string = match (args.format, args.ordering) {
-        (Output::LIST, Ordering::ALPHA) => {
-            output::render::<output::OutputItemList, output::SortByName>(cards_by_set)
+        (Output::LIST, Ordering::ALPHA) => render::<OutputItemList, SortByName>(&cards_by_set),
+        (Output::LIST, Ordering::DATE) => render::<OutputItemList, SortByDate>(&cards_by_set),
+        (Output::LIST, Ordering::AMOUNT) => {
+            OutputItemList::render::<SortByCardAmount>(&cards_by_set)
         }
-        (Output::LIST, Ordering::DATE) => {
-            output::render::<output::OutputItemList, output::SortByDate>(cards_by_set)
-        }
-        (Output::TABLE, Ordering::ALPHA) => {
-            output::render::<output::OutputTable, output::SortByName>(cards_by_set)
-        }
-        (Output::TABLE, Ordering::DATE) => {
-            output::render::<output::OutputTable, output::SortByDate>(cards_by_set)
-        }
+        (Output::TABLE, Ordering::ALPHA) => render::<OutputTable, SortByName>(&cards_by_set),
+        (Output::TABLE, Ordering::DATE) => render::<OutputTable, SortByDate>(&cards_by_set),
+        (Output::TABLE, Ordering::AMOUNT) => render::<OutputTable, SortByCardAmount>(&cards_by_set),
     };
 
-    output::write_to_file(&out_string, &outfile)
+    write_to_file(&out_string, &outfile)
 }

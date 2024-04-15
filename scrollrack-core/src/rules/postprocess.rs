@@ -45,6 +45,8 @@ impl Combine {
                 .extend(cards.to_vec().into_iter());
         }
 
+        // TODO: Aggregate card prices to average over each occurrence in the combined sets
+
         for (key, value) in cards_by_set.iter() {
             if !sets_to_combine.contains(&key) {
                 combined
