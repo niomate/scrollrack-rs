@@ -16,15 +16,29 @@ pub fn gen_outfile_name(in_name: &str) -> String {
     )
 }
 
+pub fn render<F, P>(cards_by_set: &CardsBySet) -> String
+where
+    F: OutputFormat,
+    P: SetInfoOrder,
+{
+    F::render::<P>(cards_by_set)
+}
+
 pub trait SetInfoOrder {
     type ReturnType: Ord;
     fn get_key(set_info: &SetInfo) -> Self::ReturnType;
+    fn get_combined_key(
+        set_info: &SetInfo,
+        cards_in_set: &Vec<ScryfallCardWrapper>,
+    ) -> Self::ReturnType {
+        Self::get_key(set_info)
+    }
 }
 
 pub struct SortByName;
 impl SetInfoOrder for SortByName {
     type ReturnType = String;
-    fn get_key(set_info: &SetInfo) -> String {
+    fn get_key(set_info: &SetInfo) -> Self::ReturnType {
         set_info.set_name().to_string()
     }
 }
@@ -33,7 +47,7 @@ pub struct SortByDate;
 impl SetInfoOrder for SortByDate {
     type ReturnType = NaiveDate;
     // TODO: Cache set infos ?
-    fn get_key(_set_info: &SetInfo) -> NaiveDate {
+    fn get_key(_set_info: &SetInfo) -> Self::ReturnType {
         // set_info
         //     .set_uri()
         //     .fetch()
@@ -45,35 +59,50 @@ impl SetInfoOrder for SortByDate {
     }
 }
 
-pub trait OutputFormat {
-    fn render<P>(c: CardsBySet) -> String
-    where
-        P: SetInfoOrder;
+pub struct SortByCardAmount;
+impl SetInfoOrder for SortByCardAmount {
+    type ReturnType = i32;
+
+    fn get_key(set_info: &SetInfo) -> Self::ReturnType {
+        panic!("To use SortByCardAmount as a key, use get_combined_key instead.")
+    }
+
+    fn get_combined_key(
+        set_info: &SetInfo,
+        cards_in_set: &Vec<ScryfallCardWrapper>,
+    ) -> Self::ReturnType {
+        -(cards_in_set.len() as i32)
+    }
 }
 
-pub struct OutputItemList;
-impl OutputFormat for OutputItemList {
-    fn render<P>(c: CardsBySet) -> String
+pub trait OutputFormat {
+    fn render<P>(c: &CardsBySet) -> String
     where
         P: SetInfoOrder,
     {
         c.keys()
-            .sorted_by_key(|set_info| P::get_key(set_info))
-            .map(|k| {
-                format!(
-                    "{}:\n{}",
-                    k.set_name(),
-                    c[k].iter()
-                        .sorted_by_key(|card| card.card_name())
-                        .map(|card| if k.virtual_set() {
-                            "\t - ".to_owned() + card.card_name()
-                        } else {
-                            "\t - ".to_owned() + &card.format_detailed()
-                        })
-                        .join("\n")
-                )
-            })
+            .sorted_by_key(|set_info| P::get_combined_key(set_info, &c[set_info]))
+            .map(|k| format!("{}:\n{}", k.set_name(), Self::render_set(k, &c[k])))
             .join("\n\n")
+    }
+
+    fn render_set(set_info: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String;
+}
+
+pub struct OutputItemList;
+impl OutputFormat for OutputItemList {
+    fn render_set(set_info: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String {
+        cards
+            .iter()
+            .sorted_by_key(|card| card.card_name())
+            .map(|card| {
+                if set_info.virtual_set() {
+                    "\t - ".to_owned() + card.card_name()
+                } else {
+                    "\t - ".to_owned() + &card.format_detailed()
+                }
+            })
+            .join("\n")
     }
 }
 
@@ -96,29 +125,15 @@ impl From<&ScryfallCardWrapper> for RenameLater {
 
 pub struct OutputTable;
 impl OutputFormat for OutputTable {
-    fn render<P>(c: CardsBySet) -> String
-    where
-        P: SetInfoOrder,
-    {
-        c.keys()
-            .sorted_by_key(|set_info| P::get_key(set_info))
-            .map(|k| {
-                format!(
-                    "{}:\n{}",
-                    k.set_name(),
-                    Table::new(
-                        c[k].iter()
-                            .sorted_by_key(|card| card.card_name())
-                            .map(|c| Into::<RenameLater>::into(c))
-                    )
-                )
-            })
-            .join("\n\n")
+    fn render_set(_: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String {
+        Table::new(
+            cards
+                .iter()
+                .sorted_by_key(|card| card.card_name())
+                .map(|c| Into::<RenameLater>::into(c)),
+        )
+        .to_string()
     }
-}
-
-pub fn render<F: OutputFormat, P: SetInfoOrder>(c: CardsBySet) -> String {
-    F::render::<P>(c)
 }
 
 pub fn write_to_file(data: &str, path: &str) -> Result<()> {
