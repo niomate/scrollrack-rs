@@ -106,6 +106,8 @@ impl OutputFormat for OutputItemList {
     }
 }
 
+pub struct OutputHTML;
+
 #[derive(tabled::Tabled)]
 struct RenameLater {
     name: String,
