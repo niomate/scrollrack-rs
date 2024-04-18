@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <link
+      href="fonts/keyrune/css/keyrune.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <title>{{title}}</title>
+    {% for set in sets %}
+    <i class="ss ss-{{set.set_code}} ss-3x"></i>
+    {{set.set_name}}
+    <ul>
+      {% for card in set.cards %}
+      <li>{{card.card_name}} -- {{card.price}}</li>
+      {% endfor %}
+    </ul>
+    {% endfor %}
+  </head>
+  <body></body>
+</html>

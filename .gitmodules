@@ -1,0 +1,3 @@
+[submodule "fonts/keyrune"]
+	path = fonts/keyrune
+	url = https://github.com/andrewgioia/keyrune
