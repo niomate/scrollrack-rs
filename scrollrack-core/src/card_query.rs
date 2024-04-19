@@ -17,7 +17,7 @@ type Premapping = Vec<PremappingEntry>;
 
 fn generate_premapping_entry(card: &card::Card) -> PremappingEntry {
     (
-        SetInfo::with_set_type(&card.set_name, card.set_type),
+        SetInfo::real_set(&card.set_name, &card.set.to_string(), card.set_type),
         card.to_owned(),
     )
 }
@@ -87,32 +87,6 @@ impl CardQuery {
         let mut processed = self.postprocess(merged);
         self.dedup(&mut processed)
     }
-
-    // pub fn run_par(&self, cards: Vec<CardInfo>) -> CardsBySet {
-    //     let merged = CardsBySet::new();
-    //     let merged_ref = Arc::new(RwLock::new(merged));
-
-    //     cards
-    //         .par_iter()
-    //         .map(|c| self.single_query(&c))
-    //         .flatten()
-    //         .for_each(|res| {
-    //             Arc::clone(&merged_ref)
-    //                 .write()
-    //                 .expect("Could not get write lock")
-    //                 .entry(res.0)
-    //                 .or_insert(Vec::new())
-    //                 .push(res.1.into());
-    //         });
-
-    //     let mut processed = self.postprocess(
-    //         merged_ref
-    //             .read()
-    //             .expect("Could not get read lock")
-    //             .to_owned(),
-    //     );
-    //     self.dedup(&mut processed)
-    // }
 
     fn dedup(&self, cards_by_set: &mut CardsBySet) -> CardsBySet {
         cards_by_set.par_iter_mut().for_each(move |(_set, cards)| {

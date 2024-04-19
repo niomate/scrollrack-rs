@@ -8,8 +8,8 @@
     />
     <title>{{title}}</title>
     {% for set in sets %}
-    <i class="ss ss-{{set.set_code}} ss-3x"></i>
-    {{set.set_name}}
+    <i class="ss ss-{{set.set_info.set_code}} ss-3x"></i>
+    {{set.set_info.set_name}}
     <ul>
       {% for card in set.cards %}
       <li>{{card.card_name}} -- {{card.price}}</li>
