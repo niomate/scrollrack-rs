@@ -1,8 +1,10 @@
 use scryfall::set::SetType;
+use serde::Serialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct SetInfo {
     set_name: String,
+    set_code: String,
     virtual_set: bool,
     set_type: Option<SetType>,
 }
@@ -28,6 +30,7 @@ impl SetInfo {
     {
         SetInfo {
             set_name: set_name.to_string(),
+            set_code: "".to_string(),
             virtual_set: false,
             set_type: None,
         }
@@ -36,6 +39,16 @@ impl SetInfo {
     pub fn with_set_type<P: ToString>(set_name: P, set_type: SetType) -> Self {
         SetInfo {
             set_name: set_name.to_string(),
+            set_code: "".to_string(),
+            virtual_set: false,
+            set_type: Some(set_type),
+        }
+    }
+
+    pub fn real_set<P: ToString>(set_name: P, set_code: P, set_type: SetType) -> Self {
+        SetInfo {
+            set_name: set_name.to_string(),
+            set_code: set_code.to_string(),
             virtual_set: false,
             set_type: Some(set_type),
         }
@@ -47,6 +60,7 @@ impl SetInfo {
     {
         SetInfo {
             set_name: set_name.to_string(),
+            set_code: "pmtg1".to_string(),
             virtual_set: true,
             set_type: None,
         }
@@ -66,6 +80,11 @@ impl SetInfo {
     #[must_use]
     pub fn virtual_set(&self) -> bool {
         self.virtual_set
+    }
+
+    #[must_use]
+    pub fn set_code(&self) -> &str {
+        self.set_code.as_ref()
     }
 }
 

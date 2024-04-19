@@ -2,10 +2,8 @@ use clap::ArgEnum;
 use clap::Parser;
 
 use scrollrack_core::card_query::CardQuery;
-use scrollrack_core::output::{
-    gen_outfile_name, render, write_to_file, OutputFormat, OutputItemList, OutputTable,
-    SortByCardAmount, SortByDate, SortByName,
-};
+use scrollrack_core::output::render_to_file;
+use scrollrack_core::output::{format, order};
 use scrollrack_core::parse;
 
 use anyhow::Result;
@@ -21,6 +19,7 @@ enum Ordering {
 enum Output {
     TABLE,
     LIST,
+    HTML,
 }
 
 #[derive(Parser, Debug)]
@@ -48,21 +47,30 @@ async fn main() -> Result<()> {
         .run(parse::parse_card_infos(lines))
         .await;
 
-    let outfile = match args.output {
-        Some(path) => path,
-        None => gen_outfile_name(&args.path),
+    let formatter = match args.format {
+        Output::TABLE => Box::new(format::OutputTable {}) as Box<dyn format::OutputFormat>,
+        Output::LIST => Box::new(format::OutputItemList {}) as Box<dyn format::OutputFormat>,
+        Output::HTML => Box::new(format::OutputHTML {}) as Box<dyn format::OutputFormat>,
     };
 
-    let out_string = match (args.format, args.ordering) {
-        (Output::LIST, Ordering::ALPHA) => render::<OutputItemList, SortByName>(&cards_by_set),
-        (Output::LIST, Ordering::DATE) => render::<OutputItemList, SortByDate>(&cards_by_set),
-        (Output::LIST, Ordering::AMOUNT) => {
-            OutputItemList::render::<SortByCardAmount>(&cards_by_set)
-        }
-        (Output::TABLE, Ordering::ALPHA) => render::<OutputTable, SortByName>(&cards_by_set),
-        (Output::TABLE, Ordering::DATE) => render::<OutputTable, SortByDate>(&cards_by_set),
-        (Output::TABLE, Ordering::AMOUNT) => render::<OutputTable, SortByCardAmount>(&cards_by_set),
-    };
-
-    write_to_file(&out_string, &outfile)
+    match args.ordering {
+        Ordering::ALPHA => render_to_file(
+            args.output.unwrap_or(args.path),
+            cards_by_set,
+            formatter,
+            order::SortByName {},
+        ),
+        Ordering::DATE => render_to_file(
+            args.output.unwrap_or(args.path),
+            cards_by_set,
+            formatter,
+            order::SortByDate {},
+        ),
+        Ordering::AMOUNT => render_to_file(
+            args.output.unwrap_or(args.path),
+            cards_by_set,
+            formatter,
+            order::SortByCardAmount {},
+        ),
+    }
 }
