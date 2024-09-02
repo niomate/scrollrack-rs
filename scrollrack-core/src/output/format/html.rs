@@ -7,19 +7,10 @@ use lazy_static::lazy_static;
 
 use super::OutputFormat;
 
-lazy_static! {
-    pub static ref TEMPLATES: Tera = {
-        let mut tera = match Tera::new("templates/*.html") {
-            Ok(t) => t,
-            Err(e) => {
-                println!("Parsing error(s): {}", e);
-                ::std::process::exit(1);
-            }
-        };
-        tera.autoescape_on(vec![".html", ".sql"]);
-        tera
-    };
-}
+static HTML_TEMPLATE: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../templates/html_template.html"
+));
 
 #[derive(Serialize)]
 struct Entry {
@@ -45,9 +36,7 @@ impl OutputFormat for OutputHTML {
         context.insert("title", "Cards sorted by set");
         context.insert("sets", &entries);
 
-        TEMPLATES
-            .render("html_template.html", &context)
-            .unwrap_or("".to_string())
+        Tera::one_off(HTML_TEMPLATE, &context, true).unwrap_or("".to_string())
     }
 
     fn render_set(&self, _set_info: &SetInfo, _cards: &Vec<ScryfallCardWrapper>) -> String {

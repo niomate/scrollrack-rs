@@ -2,6 +2,7 @@ use clap::ArgEnum;
 use clap::Parser;
 
 use scrollrack_core::card_query::CardQuery;
+use scrollrack_core::output::render_pdf;
 use scrollrack_core::output::render_to_file;
 use scrollrack_core::output::{format, order};
 use scrollrack_core::parse;
@@ -52,6 +53,8 @@ async fn main() -> Result<()> {
         Output::LIST => Box::new(format::OutputItemList {}) as Box<dyn format::OutputFormat>,
         Output::HTML => Box::new(format::OutputHTML {}) as Box<dyn format::OutputFormat>,
     };
+
+    render_pdf()?;
 
     match args.ordering {
         Ordering::ALPHA => render_to_file(
