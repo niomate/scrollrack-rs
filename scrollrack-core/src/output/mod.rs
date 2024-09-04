@@ -15,6 +15,15 @@ fn gen_outfile_name(in_name: &str, ext: &str) -> String {
     )
 }
 
+pub fn render_to_string<P: order::SetInfoOrder>(
+    cards_by_set: CardsBySet,
+    formatter: Box<dyn format::OutputFormat>,
+    order: P,
+) -> anyhow::Result<String> {
+    let rendered = formatter.render(&order.sort(cards_by_set));
+    Ok(rendered)
+}
+
 pub fn render_to_file<P: order::SetInfoOrder>(
     path: String,
     cards_by_set: CardsBySet,
