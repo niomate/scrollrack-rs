@@ -15,23 +15,18 @@ fn gen_outfile_name(in_name: &str, ext: &str) -> String {
     )
 }
 
-pub fn render_to_string<P: order::SetInfoOrder>(
+pub fn render_to_string<P: order::SetInfoOrder, F: format::OutputFormat>(
     cards_by_set: CardsBySet,
-    formatter: Box<dyn format::OutputFormat>,
-    order: P,
 ) -> anyhow::Result<String> {
-    let rendered = formatter.render(&order.sort(cards_by_set));
-    Ok(rendered)
+    Ok(F::render(&P::sort(cards_by_set)))
 }
 
-pub fn render_to_file<P: order::SetInfoOrder>(
+pub fn render_to_file<P: order::SetInfoOrder, F: format::OutputFormat>(
     path: String,
     cards_by_set: CardsBySet,
-    formatter: Box<dyn format::OutputFormat>,
-    order: P,
 ) -> anyhow::Result<()> {
-    let rendered = formatter.render(&order.sort(cards_by_set));
-    let mut outfile = File::create(gen_outfile_name(&path, &formatter.get_file_extension()))?;
+    let rendered = F::render(&P::sort(cards_by_set));
+    let mut outfile = File::create(gen_outfile_name(&path, &F::get_file_extension()))?;
     Ok(outfile.write_all(rendered.as_bytes())?)
 }
 

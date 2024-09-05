@@ -23,7 +23,7 @@ impl From<&ScryfallCardWrapper> for RenameLater {
 
 pub struct OutputTable;
 impl OutputFormat for OutputTable {
-    fn render_set(&self, _: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String {
+    fn render_set(_: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String {
         Table::new(
             cards
                 .iter()
@@ -33,7 +33,7 @@ impl OutputFormat for OutputTable {
         .to_string()
     }
 
-    fn get_file_extension(&self) -> String {
+    fn get_file_extension() -> String {
         "txt".to_string()
     }
 }

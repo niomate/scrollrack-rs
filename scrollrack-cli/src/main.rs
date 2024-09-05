@@ -57,23 +57,17 @@ async fn main() -> Result<()> {
     render_pdf()?;
 
     match args.ordering {
-        Ordering::ALPHA => render_to_file(
+        Ordering::ALPHA => render_to_file::<order::SortByName, formatter>(
             args.output.unwrap_or(args.path),
             cards_by_set,
-            formatter,
-            order::SortByName {},
         ),
-        Ordering::DATE => render_to_file(
+        Ordering::DATE => render_to_file::<order::SortByDate, formatter>(
             args.output.unwrap_or(args.path),
             cards_by_set,
-            formatter,
-            order::SortByDate {},
         ),
-        Ordering::AMOUNT => render_to_file(
+        Ordering::AMOUNT => render_to_file::<order::SortByCardAmount, formatter>(
             args.output.unwrap_or(args.path),
             cards_by_set,
-            formatter,
-            order::SortByCardAmount {},
         ),
     }
 }

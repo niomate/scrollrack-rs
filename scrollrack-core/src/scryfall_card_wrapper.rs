@@ -1,7 +1,7 @@
 use scryfall::card;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ScryfallCardWrapper {
     set_code: String,
     set_name: String,

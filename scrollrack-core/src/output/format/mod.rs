@@ -11,19 +11,19 @@ pub use list::OutputItemList;
 pub use table::OutputTable;
 
 pub trait OutputFormat {
-    fn render(&self, c: &Vec<(SetInfo, Vec<ScryfallCardWrapper>)>) -> String {
+    fn render(c: &Vec<(SetInfo, Vec<ScryfallCardWrapper>)>) -> String {
         c.iter()
             .map(|(set_info, cards)| {
                 format!(
                     "{}:\n{}",
                     set_info.set_name(),
-                    self.render_set(&set_info, &cards)
+                    Self::render_set(&set_info, &cards)
                 )
             })
             .join("\n\n")
     }
 
-    fn render_set(&self, set_info: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String;
+    fn render_set(set_info: &SetInfo, cards: &Vec<ScryfallCardWrapper>) -> String;
 
-    fn get_file_extension(&self) -> String;
+    fn get_file_extension() -> String;
 }

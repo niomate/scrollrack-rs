@@ -29,7 +29,7 @@ impl From<&(SetInfo, Vec<ScryfallCardWrapper>)> for Entry {
 
 pub struct OutputHTML;
 impl OutputFormat for OutputHTML {
-    fn render(&self, c: &Vec<(SetInfo, Vec<ScryfallCardWrapper>)>) -> String {
+    fn render(c: &Vec<(SetInfo, Vec<ScryfallCardWrapper>)>) -> String {
         let entries: Vec<Entry> = c.iter().map(|entry| entry.into()).collect();
 
         let mut context = Context::new();
@@ -39,11 +39,11 @@ impl OutputFormat for OutputHTML {
         Tera::one_off(HTML_TEMPLATE, &context, true).unwrap_or("".to_string())
     }
 
-    fn render_set(&self, _set_info: &SetInfo, _cards: &Vec<ScryfallCardWrapper>) -> String {
+    fn render_set(_set_info: &SetInfo, _cards: &Vec<ScryfallCardWrapper>) -> String {
         panic!("render_set is not implemented for OutputHTML");
     }
 
-    fn get_file_extension(&self) -> String {
+    fn get_file_extension() -> String {
         "html".to_string()
     }
 }

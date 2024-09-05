@@ -1,7 +1,7 @@
 use scryfall::set::SetType;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SetInfo {
     set_name: String,
     set_code: String,
