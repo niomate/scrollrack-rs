@@ -2,8 +2,6 @@ use crate::card_query::CardsBySet;
 use std::io::Write;
 use std::{fs::File, path::Path};
 
-use headless_chrome::{protocol::cdp::Page, Browser};
-
 pub mod format;
 pub mod order;
 
