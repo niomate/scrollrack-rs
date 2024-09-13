@@ -3,7 +3,6 @@ resolver = "2"
 members = [
 	"scrollrack-core",
 	"scrollrack-cli",
-	"scrollrack-gui",
 	"scrollrack-backend"
 ]
 
