@@ -16,5 +16,4 @@ tabled = "0.15.0"
 tera = "1.19.1"
 serde = { version = "1.0", features = ["derive"] }
 tokio = "1.31.0"
-headless_chrome = {git = "https://github.com/rust-headless-chrome/rust-headless-chrome", features = ["fetch"]}
 failure = "0.1.8"
