@@ -1,4 +1,7 @@
+use rocket::http::Method;
+use rocket::http::Status;
 use rocket::serde::{json::Json, Deserialize};
+use rocket_cors::{AllowedOrigins, CorsOptions};
 use scrollrack_core::card_query::CardQuery;
 use scrollrack_core::cardinfo::CardInfo;
 use scrollrack_core::output::format::OutputFormat;
@@ -35,8 +38,20 @@ async fn decklist_table(cards: Json<Vec<&'_ str>>) -> String {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount(
-        "/api/endpoints",
-        routes![single_card, decklist_table, decklist_raw],
-    )
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(
+            vec![Method::Get, Method::Post]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allow_credentials(true);
+
+    rocket::build()
+        .mount(
+            "/api/endpoints",
+            routes![single_card, decklist_table, decklist_raw,],
+        )
+        .attach(cors.to_cors().unwrap())
 }
