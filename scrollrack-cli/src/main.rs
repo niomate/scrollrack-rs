@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
         .run(parse::parse_card_infos(lines))
         .await;
 
-    let formatter = match args.format {
+    const formatter = match args.format {
         Output::TABLE => Box::new(format::OutputTable {}) as Box<dyn format::OutputFormat>,
         Output::LIST => Box::new(format::OutputItemList {}) as Box<dyn format::OutputFormat>,
         Output::HTML => Box::new(format::OutputHTML {}) as Box<dyn format::OutputFormat>,

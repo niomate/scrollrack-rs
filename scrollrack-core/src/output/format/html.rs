@@ -3,8 +3,6 @@ use crate::setinfo::SetInfo;
 use serde::Serialize;
 use tera::{Context, Tera};
 
-use lazy_static::lazy_static;
-
 use super::OutputFormat;
 
 static HTML_TEMPLATE: &str = include_str!(concat!(
